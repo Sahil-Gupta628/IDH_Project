@@ -11,3 +11,16 @@ jobs:
               #   echo "Cloning repository..."
               #   echo "${{toJson(github)}}"
               #   git clone https://github.com/${{github.repository}}.git
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Get code
+          uses: actions/checkout@v4
+        - name: Build Project
+          run: |
+            echo "Building D..."
+            dub build --build-mode=unittest
+        - name: Deploy Project
+          run: |
+            echo "Deploying D..."
+            dub build --build-mode=unittest --compiler=ldc2 --build-args="-O -release -g" --config=release --force
