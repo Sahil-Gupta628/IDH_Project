@@ -1,0 +1,59 @@
+{% extends "prescriptions/base.html" %}
+
+{% block title %}View Scan{% endblock %}
+
+{% block content %}
+<div class="view-scan-container">
+    <header class="view-scan-header">
+        <h1>Prescription Details</h1>
+        <div class="scan-date">
+            {{ scan.timestamp|date:"F d, Y" }}
+        </div>
+    </header>
+
+    <div class="scan-content">
+        <div class="scan-image-container">
+            <img src="{{ MEDIA_URL }}{{ scan.image_path }}" alt="Prescription Scan" class="scan-image">
+        </div>
+
+        <div class="scan-details-container">
+            <div class="scan-section">
+                <h2>Extracted Prescription</h2>
+                <div class="extracted-text">
+                    {{ scan.extracted_text | safe }}
+                </div>
+            </div>
+
+            {% if scan.medicines.exists %}
+            <div class="scan-section">
+                <h2>Medicines</h2>
+                <div class="medicines-list">
+                    {% for medicine in scan.medicines.all %}
+                    <div class="medicine-item">
+                        <h3>{{ medicine.name }}</h3>
+                        {% if medicine.dosage %}
+                        <p><strong>Dosage:</strong> {{ medicine.dosage }}</p>
+                        {% endif %}
+                        {% if medicine.frequency %}
+                        <p><strong>Frequency:</strong> {{ medicine.frequency }}</p>
+                        {% endif %}
+                        {% if medicine.duration %}
+                        <p><strong>Duration:</strong> {{ medicine.duration }}</p>
+                        {% endif %}
+                        {% if medicine.description %}
+                        <p>{{ medicine.description }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="scan-actions">
+        <button onclick="window.print()" class="action-button print-button">Print Details</button>
+        <a href="{% url 'dashboard' %}" class="action-button">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

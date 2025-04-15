@@ -1,0 +1,71 @@
+{% extends "prescriptions/base.html" %}
+
+{% block title %}{% if register %}Register{% else %}Login{% endif %}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h1>{% if register %}Create Account{% else %}Welcome Back{% endif %}</h1>
+    
+    {% if register %}
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="error">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_email">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_password1">Password</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <div class="error">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_password2">Confirm Password</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div class="error">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <button type="submit">Register</button>
+    </form>
+    {% else %}
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit">Login</button>
+    </form>
+    {% endif %}
+    
+    <div class="auth-switch">
+        {% if register %}
+        Already have an account? <a href="{% url 'login' %}">Login</a>
+        {% else %}
+        New user? <a href="{% url 'register' %}">Create Account</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

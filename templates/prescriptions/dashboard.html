@@ -1,0 +1,85 @@
+{% extends "prescriptions/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <h1>Welcome, {{ user.username }}</h1>
+        <a href="{% url 'scan' %}" class="new-scan-btn">New Scan</a>
+    </header>
+
+    <section class="scan-history">
+        <h2>Previous Scans</h2>
+        
+        {% if scans %}
+        <div class="scan-grid">
+            {% for scan in scans %}
+            <div class="scan-card">
+                <div class="scan-image">
+                    <img src="{{ MEDIA_URL }}{{ scan.image_path }}" alt="Prescription Scan">
+                </div>
+                <div class="scan-details">
+                    <div class="scan-date">{{ scan.timestamp|date:"F d, Y" }}</div>
+                    <div class="scan-medicines">
+                        {% for medicine in scan.medicines.all %}
+                        <span class="medicine-tag">{{ medicine.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'view_scan' scan.id %}" class="view-details-btn">
+                        View Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-scans">
+            <p>No scans yet. Start by creating your first scan!</p>
+            <a href="{% url 'scan' %}" class="new-scan-btn">Create First Scan</a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+<!-- Scan Details Modal -->
+<div id="scanModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="scanDetailsContent"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    function viewScanDetails(scanId) {
+        fetch(`/get_scan/${scanId}/`)
+            .then(response => response.json())
+            .then(data => {
+                const modal = document.getElementById('scanModal');
+                const content = document.getElementById('scanDetailsContent');
+                
+                content.innerHTML = `
+                    <h2>Prescription Details</h2>
+                    <p><strong>Date:</strong> ${data.timestamp}</p>
+                    <div class="extracted-text">${data.extracted_text}</div>
+                `;
+                
+                modal.style.display = 'block';
+                
+                const closeBtn = document.querySelector('.close');
+                closeBtn.onclick = function() {
+                    modal.style.display = 'none';
+                }
+                
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+            });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "prescriptions/base.html" %}
+
+{% block title %}Scan Prescription{% endblock %}
+
+{% block content %}
+<div class="scan-container">
+    <h1>Scan Prescription</h1>
+
+    <form action="{% url 'scan' %}" method="POST" enctype="multipart/form-data" class="scan-form">
+        {% csrf_token %}
+        <div class="upload-area" id="uploadArea">
+            {{ form.file }}
+            <div class="upload-prompt">
+                <span class="upload-icon">📄</span>
+                <p>Drop your prescription image here or click to browse</p>
+            </div>
+            <img id="imagePreview" class="hidden" alt="Preview">
+        </div>
+        <button type="submit" class="scan-button">Analyze Prescription</button>
+    </form>
+
+    {% if extracted_text %}
+    <div class="results-container">
+        <div class="result-section">
+            <h2>Extracted Prescription</h2>
+            <div class="extracted-text">
+                {{ extracted_text | safe }}
+            </div>
+        </div>
+
+        {% if medicine_info %}
+        <div class="result-section">
+            <h2>Medicine Information</h2>
+            <div class="medicine-info">
+                {{ medicine_info | safe }}
+            </div>
+        </div>
+        {% endif %}
+    
+        <div class="action-buttons">
+            <button onclick="window.print()" class="action-button print-button">Print Results</button>
+            <a href="{% url 'dashboard' %}" class="action-button">Back to Dashboard</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    // Image Preview Function
+    document.getElementById('id_file').onchange = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const image = document.getElementById("imagePreview");
+                image.src = e.target.result;
+                image.classList.remove("hidden");
+                document.querySelector('.upload-prompt').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    // Drag and drop functionality
+    const uploadArea = document.getElementById('uploadArea');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+        uploadArea.classList.add('highlight');
+    }
+    
+    function unhighlight() {
+        uploadArea.classList.remove('highlight');
+    }
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length) {
+            document.getElementById('id_file').files = files;
+            document.getElementById('id_file').dispatchEvent(new Event('change'));
+        }
+    }
+</script>
+{% endblock %}
