@@ -21,7 +21,7 @@ jobs:
           run: |
             echo "Building D..."
             # dub build --build-mode=unittest
-        - name: Deploy Project
+        - name: Deploy Project 
           run: |
             echo "Deploying D..."
             # dub build --build-mode=unittest --compiler=ldc2 --build-args="-O -release -g" --config=release --force
