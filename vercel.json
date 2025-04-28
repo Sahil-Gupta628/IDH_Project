@@ -22,6 +22,5 @@
         "src": "/(.*)",
         "dest": "prescription_interpreter/wsgi.py"
       }
-    ],
-    "outputDirectory": "staticfiles_build"
+    ]
   }
