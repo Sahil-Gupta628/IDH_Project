@@ -4,7 +4,7 @@ import markdown
 from django.conf import settings
 
 # Import your API key
-GEMINI_API_KEY = "AIzaSyB76_e0Roy5UPSLARsgHDRyMSFBOdmSjB4" #"Replace with your actual API key"
+GEMINI_API_KEY =  #"Replace with your actual API key"
 
 # Configure Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
